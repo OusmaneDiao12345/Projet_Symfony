@@ -1,19 +1,217 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Boutique BaFamily{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo a {
+            color: white;
+            font-size: 1.2rem; /* Diminue la taille du texte */
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar .menu {
+            list-style: none;
+            display: flex;
+            gap: 0.5rem; /* Réduit l'écart entre les éléments */
+        }
+
+        .navbar .menu li {
+            display: inline;
+        }
+
+        .navbar .menu li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.3rem 0.8rem; /* Diminue la taille des liens */
+            background-color: #555;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 0.9rem; /* Diminue la taille du texte des liens */
+        }
+
+        .navbar .menu li a:hover {
+            background-color: #777;
+        }
+
+        /* Footer Styles */
+        .footer-content {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .footer-content .socials {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .footer-content .socials li {
+            display: inline;
+        }
+
+        .footer-content .socials li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        h1.page-title {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        /* Table container */
+        .table-container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Table styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f7f7f7;
+            font-weight: bold;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions {
+            text-align: right;
+        }
+
+        .actions a {
+            margin-right: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        /* Button styles */
+        .btn-warning {
+            background-color: #f0ad4e;
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+        }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+        }
+
+        /* Search form */
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 8px;
+            width: 300px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+</style>
+
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ path('client_index') }}"><i class="fas fa-shopping-cart"></i> Boutique BaFamily</a>
+        </div>
+        <ul class="menu">
+            <li><a href="{{ path('client_index') }}"><i class="fas fa-list"></i> Client List</a></li>
+            <li><a href="{{ path('client_add') }}"><i class="fas fa-user-plus"></i> Ajouter Client</a></li>
+            <li><a href=""><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        </ul>
+    </nav>
+</header>
+
+{% block body %}{% endblock %}
+
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2024 My Boutique BaFamily - All Rights Reserved</p>
+    </div>
+</footer>
+
+</body>
 </html>

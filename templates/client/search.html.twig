@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Search Client{% endblock %}
+
+{% block body %}
+    <h1>Search for a Client by Phone Number</h1>
+
+    <form method="get" action="{{ path('client_search') }}">
+        <input type="text" name="telephone" class="form-control" placeholder="Enter phone number" value="{{ searchTerm }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if searchTerm %}
+        <h2>Results for "{{ searchTerm }}":</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td>{{ client.nom }}</td>
+                        <td>{{ client.prenom }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.telephone }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">No client found with this phone number.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
