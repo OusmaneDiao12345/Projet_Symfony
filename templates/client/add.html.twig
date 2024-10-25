@@ -9,11 +9,11 @@
         }
 
         .bg-gray-100 {
-            background-color: #f4f4f4; /* couleur de fond pour le corps */
+            background-color: #f4f4f4;
         }
 
         .bg-white {
-            background-color: #fff; /* couleur de fond du formulaire */
+            background-color: #fff;
         }
 
         .shadow-md {
@@ -21,62 +21,66 @@
         }
 
         .rounded-lg {
-            border-radius: 8px; /* arrondir les coins du formulaire */
+            border-radius: 8px;
         }
 
         .text-2xl {
-            font-size: 1.5rem; /* taille du titre */
+            font-size: 1.5rem;
         }
 
         .text-center {
-            text-align: center; /* centrer le texte */
+            text-align: center;
         }
 
         .form-input {
-            padding: 0.5rem; /* ajout d'un rembourrage à l'input */
-            border: 1px solid #ccc; /* bordure gris clair */
-            border-radius: 4px; /* arrondir les coins de l'input */
-            width: 100%; /* occuper toute la largeur */
-            transition: border-color 0.2s ease; /* transition douce pour la couleur de la bordure */
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            transition: border-color 0.2s ease;
         }
 
         .form-input:focus {
-            border-color: #3b82f6; /* couleur de la bordure au focus */
-            outline: none; /* supprimer le contour par défaut */
+            border-color: #3b82f6;
+            outline: none;
         }
 
         .hover\:bg-gray-800:hover {
-            background-color: #1f2937; /* couleur du bouton au survol */
+            background-color: #1f2937;
         }
 
         .bg-black {
-            background-color: black; /* couleur de fond du bouton */
+            background-color: black;
         }
 
         .text-white {
-            color: white; /* couleur du texte du bouton */
+            color: white;
         }
 
         .font-bold {
-            font-weight: bold; /* gras pour le texte */
+            font-weight: bold;
         }
 
         .py-2 {
-            padding-top: 0.5rem; /* rembourrage vertical du bouton */
+            padding-top: 0.5rem;
             padding-bottom: 0.5rem;
         }
 
         .px-4 {
-            padding-left: 1rem; /* rembourrage horizontal du bouton */
+            padding-left: 1rem;
             padding-right: 1rem;
         }
 
         .rounded {
-            border-radius: 4px; /* arrondir les coins du bouton */
+            border-radius: 4px;
         }
 
         .space-y-4 > :not(:last-child) {
-            margin-bottom: 1rem; /* espacement entre les champs du formulaire */
+            margin-bottom: 1rem;
+        }
+
+        .text-red-500 {
+            color: red;
         }
     </style>
 
@@ -84,12 +88,13 @@
         <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
             <h1 class="text-2xl font-bold mb-6 text-center">Ajouter un client</h1>
 
-               {{ form_start(form, {'attr': {'class': 'space-y-4', 'novalidate': 'novalidate'}}) }}
+            {{ form_start(form, {'attr': {'class': 'space-y-4', 'id': 'client-form'}}) }}
                 {% for field in form %}
                     <div class="mb-4">
                         {{ form_label(field) }}
                         {{ form_widget(field, {'attr': {'class': 'form-input block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'}}) }}
-                        {{ form_errors(field, {'attr': {'class': 'text-red-500 text-sm'}}) }} {# Affiche les erreurs en rouge #}
+                        <p class="text-red-500 text-sm" id="error-{{ field.vars.id }}" style="display: none;">Ce champ est requis.</p> {# Affichage des erreurs #}
+                        {{ form_errors(field) }}
                     </div>
                 {% endfor %}
                 
@@ -101,4 +106,30 @@
             {{ form_end(form, {'render_rest': false}) }}
         </div>
     </div>
+
+    <script>
+        document.getElementById('client-form').addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // Boucle sur tous les champs du formulaire
+            document.querySelectorAll('.form-input').forEach(function(input) {
+                // On récupère l'élément de message d'erreur correspondant
+                const errorElement = document.getElementById('error-' + input.id);
+
+                if (input.value.trim() === '') {
+                    // Si le champ est vide, on empêche l'envoi et affiche le message d'erreur
+                    isValid = false;
+                    errorElement.style.display = 'block';
+                } else {
+                    // Si le champ est rempli, on cache le message d'erreur
+                    errorElement.style.display = 'none';
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Empêche l'envoi du formulaire si un champ est vide
+            }
+        });
+    </script>
+
 {% endblock %}

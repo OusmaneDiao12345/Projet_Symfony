@@ -15,11 +15,21 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ClientRepository extends ServiceEntityRepository
-{
+
+  {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Client::class);
     }
+    public function findClientByTelephone(string $telephone): ?Client
+{
+    return $this->createQueryBuilder('c')
+        ->andWhere('c.telephone = :telephone')
+        ->setParameter('telephone', $telephone)
+        ->getQuery()
+        ->getOneOrNullResult();
+}
+
  //   public function findBySearchCriteria(ClientSearch $search)
 //{
   //  $qb = $this->createQueryBuilder('c');

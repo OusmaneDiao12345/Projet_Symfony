@@ -5,33 +5,42 @@
 {% block body %}
     <h1>Search for a Client by Phone Number</h1>
 
-    <form method="get" action="{{ path('client_search') }}">
-        <input type="text" name="telephone" class="form-control" placeholder="Enter phone number" value="{{ searchTerm }}">
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+    {% if app.flashes('error') %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    {% if searchTerm %}
+    {{ form_start(searchForm) }}
+        {{ form_label(searchForm.telephone) }}  {# Ajout du label #}
+        {{ form_widget(searchForm.telephone) }}
+        <button type="submit">Chercher</button>
+    {{ form_end(searchForm) }}
+
+    {% if searchTerm is not null %}
         <h2>Results for "{{ searchTerm }}":</h2>
-        <table>
+        <table class="table-auto w-full border border-gray-300">
             <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
+                    <th class="border border-gray-300">Nom</th>
+                    <th class="border border-gray-300">Prénom</th>
+                    <th class="border border-gray-300">Email</th>
+                    <th class="border border-gray-300">Téléphone</th>
                 </tr>
             </thead>
             <tbody>
                 {% for client in clients %}
                     <tr>
-                        <td>{{ client.nom }}</td>
-                        <td>{{ client.prenom }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.telephone }}</td>
+                        <td class="border border-gray-300">{{ client.nom }}</td>
+                        <td class="border border-gray-300">{{ client.prenom }}</td>
+                        <td class="border border-gray-300">{{ client.email }}</td>
+                        <td class="border border-gray-300">{{ client.telephone }}</td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4">No client found with this phone number.</td>
+                        <td colspan="4" class="border border-gray-300">No client found with this phone number.</td>
                     </tr>
                 {% endfor %}
             </tbody>

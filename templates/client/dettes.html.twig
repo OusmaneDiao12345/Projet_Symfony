@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dettes de {{ client.nom }}{% endblock %}
+
+{% block body %}
+    <h1>Dettes de {{ client.nom }} {{ client.prenom }}</h1>
+
+    {% if dettes is not empty %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Montant</th>
+                    <th>Date de la Dette</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dette in dettes %}
+                    <tr>
+                        <td>{{ dette.id }}</td>
+                        <td>{{ dette.montant }}</td>
+                        <td>{{ dette.dateDette ? dette.dateDette|date('Y-m-d H:i') : 'Non spécifiée' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune dette trouvée pour ce client.</p>
+    {% endif %}
+    
+    <a href="{{ path('client_index') }}">Retour à la liste des clients</a>
+{% endblock %}

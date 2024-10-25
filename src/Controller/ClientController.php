@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Form\ClientType;
+use App\Form\ClientSearchType;
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,6 +15,13 @@ use Knp\Component\Pager\PaginatorInterface;
 
 class ClientController extends AbstractController
 {
+    private ClientRepository $clientRepository;
+
+    public function __construct(ClientRepository $clientRepository)
+    {
+        $this->clientRepository = $clientRepository;
+    }
+
     #[Route('/client/add', name: 'client_add')]
     public function addClient(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -42,38 +50,98 @@ class ClientController extends AbstractController
     }
 
     #[Route('/clients', name: 'client_index')]
-    public function index(ClientRepository $clientRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(Request $request, PaginatorInterface $paginator): Response
     {
-        // Fetch all clients query
-        $query = $clientRepository->createQueryBuilder('c')
-            ->getQuery();
+        // Create the search form
+        $searchForm = $this->createForm(ClientSearchType::class);
+        $searchForm->handleRequest($request);
+        
+        // Build the query for fetching clients
+        $queryBuilder = $this->clientRepository->createQueryBuilder('c');
+    
+        // If the form is submitted and valid, filter by telephone
+        if ($searchForm->isSubmitted()) {
+            $searchData = $searchForm->getData();
+            if (!empty($searchData['telephone'])) {
+                $queryBuilder->where('c.telephone LIKE :search')
+                             ->setParameter('search', '%' . $searchData['telephone'] . '%');
+            } else {
+                // Ajout d'un message flash si le champ est vide
+                $this->addFlash('error', 'Veuillez saisir un numéro de téléphone.');
+            }
+        }
     
         // Paginate the results
         $pagination = $paginator->paginate(
-            $query, /* query NOT result */
-            $request->query->getInt('page', 1), /* page number */
-            3 /* limit per page */
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1), // Page number
+            3 // Limit of items per page
         );
     
-        // Render the list of clients with pagination
+        // Return the view with the paginated list and the search form
         return $this->render('client/index.html.twig', [
             'clients' => $pagination,
+            'searchForm' => $searchForm->createView(),
+        ]);
+    }
+
+    #[Route('/client/delete/{id}', name: 'client_delete')]
+    public function deleteClient(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $client = $this->clientRepository->find($id); // Utiliser la méthode find directement
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+
+        // Logique de suppression du client
+        $entityManager->remove($client);
+        $entityManager->flush();
+
+        // Redirection ou réponse après la suppression
+        return $this->redirectToRoute('client_index'); // Assurez-vous que 'client_index' est le bon nom de route
+    }
+
+    #[Route('/client/{id}/dettes', name: 'client_dettes')]
+    public function viewDettes(int $id): Response
+    {
+        // Récupérer le client par son ID
+        $client = $this->clientRepository->find($id);
+    
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+    
+        // Récupérer les dettes associées au client
+        $dettes = $client->getDettes();
+    
+        return $this->render('client/dettes.html.twig', [
+            'client' => $client,
+            'dettes' => $dettes,
         ]);
     }
 
     #[Route('/client/search', name: 'client_search')]
-    public function search(Request $request, ClientRepository $clientRepository): Response
+    public function search(Request $request, PaginatorInterface $paginator): Response
     {
-        $searchTerm = $request->query->get('telephone');
-        $clients = [];
+        // Retrieve the search term from the request
+        $searchTerm = $request->query->get('search');
 
-        if ($searchTerm) {
-            $clients = $clientRepository->findBy(['telephone' => $searchTerm]);
-        }
+        // Build the query to filter by telephone
+        $queryBuilder = $this->clientRepository->createQueryBuilder('c')
+            ->where('c.telephone LIKE :searchTerm')
+            ->setParameter('searchTerm', '%' . $searchTerm . '%');
 
-        return $this->render('client/search.html.twig', [
-            'clients' => $clients,
-            'searchTerm' => $searchTerm,
+        // Paginate the results
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1), // Page number
+            3 // Limit of items per page
+        );
+
+        // Return the view with the search results
+        return $this->render('client/index.html.twig', [
+            'clients' => $pagination,
         ]);
     }
 }
