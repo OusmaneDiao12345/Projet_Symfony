@@ -2,3 +2,6 @@ controllers:
     resource: ../src/Controller/
     type: attribute
     
+client_index:
+    path: /clients
+    controller: App\Controller\ClientController::index
